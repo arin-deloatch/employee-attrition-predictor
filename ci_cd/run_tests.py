@@ -1,14 +1,18 @@
-import unittest
 import pandas as pd
+import os
 
-class TestFeatureEngineering(unittest.TestCase):
-    def test_data_shape(self):
-        df = pd.read_csv("data-feature-engineering/data.csv")
-        self.assertGreater(df.shape[0], 0, "Dataset should not be empty")
+# Ensure training data exists
+def test_data_existence():
+    assert os.path.exists("data-feature-engineering/train.csv"), "Train data is missing"
+    assert os.path.exists("data-feature-engineering/test.csv"), "Test data is missing"
 
-    def test_missing_values(self):
-        df = pd.read_csv("data-feature-engineering/data.csv")
-        self.assertFalse(df.isnull().sum().sum() > 0, "Dataset should not have missing values")
+# Validate dataset integrity
+def test_data_integrity():
+    df = pd.read_csv("data-feature-engineering/train.csv")
+    assert df.isnull().sum().max() == 0, "Dataset contains missing values"
+    assert len(df) > 1000, "Dataset is too small"
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    test_data_existence()
+    test_data_integrity()
+    print("All tests passed!")
