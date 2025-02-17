@@ -1,0 +1,23 @@
+# Core Libraries
+boto3>=1.26.0        # AWS SDK for Python
+sagemaker>=2.170.0   # Amazon SageMaker Python SDK
+numpy>=1.23.0        # Numerical computations
+pandas>=1.5.0        # Data manipulation
+scikit-learn>=1.1.0  # Machine learning utilities
+xgboost>=1.7.0       # Model training
+
+# Data Processing
+pyarrow>=11.0.0      # Apache Arrow for fast data processing
+awswrangler>=3.0.0   # AWS Data Wrangler for handling Athena, S3, Redshift
+
+# Model Deployment & Monitoring
+flask>=2.2.2         # Optional: API for model serving
+fastapi>=0.87.0      # Optional: API for real-time predictions
+uvicorn>=0.20.0      # ASGI Server for FastAPI
+boto3-stubs[sagemaker]>=1.26.0  # Auto-completion for SageMaker API
+
+# CI/CD and Testing
+pytest>=7.0.0        # Unit testing framework
+flake8>=6.0.0        # Code linting
+black>=22.0.0        # Code formatting
+pre-commit>=3.0.0    # Pre-commit hooks for automatic checks
