@@ -59,12 +59,20 @@ Follow these steps to execute the workflow:
    jupyter notebook athena_init.ipynb
    ```
 
+### 4. **Initialize Feature Store**
+- Open and run the `feature_store_init.ipynb` notebook.
+- Stores structured feature data in Amazon SageMaker Feature Store
+- Enables versioning and governance for machine learning features
+- Provides a queryable offline feature store via AWS Athena
+- Ensures feature consistency across training and inference pipelines
+- Automates data ingestion, validation, and retrieval for future use
 ## Notes
 - **Execution Order**:
   The notebooks must be executed in the following order to ensure all dependencies are met:
   1. `s3_init.ipynb`
   2. `data_exploration.ipynb`
   3. `athena_init.ipynb`
+  4. `feature_store_init.ipynb`
 
 - **Troubleshooting**:
   - If you encounter any issues with AWS connections, verify your AWS credentials and ensure you have the necessary permissions for S3 and Athena.
