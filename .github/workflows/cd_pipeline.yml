@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -25,6 +26,14 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region us-east-1
+
+      - name: Retrieve Model URL from S3
+        run: |
+          BUCKET=${{ secrets.SAGEMAKER_DEFAULT_BUCKET }}
+          echo "Using default bucket: $BUCKET"
+          aws s3 cp s3://$BUCKET/model/model_url.txt model_url.txt
+          MODEL_URL=$(cat model_url.txt)
+          echo "MODEL_URL=$MODEL_URL" >> $GITHUB_ENV
 
       - name: Deploy Model to SageMaker
         run: python ci_cd/deploy_model.py

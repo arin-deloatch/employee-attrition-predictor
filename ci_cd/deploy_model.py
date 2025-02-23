@@ -1,18 +1,23 @@
+import os
 import boto3
 import sagemaker
-import os
 
-# Get SageMaker session and role
+# Retrieve the dynamic model URL from an environment variable
+model_artifact = os.getenv("MODEL_URL")
+if not model_artifact:
+    raise ValueError("MODEL_URL environment variable is not set.")
+
+# Initialize SageMaker session and role
 session = sagemaker.Session()
 role = sagemaker.get_execution_role()
 
-# Define model name and S3 bucket
+# Define model name (you might also want to include versioning or timestamps)
 model_name = "retainai-xgboost"
-bucket = session.default_bucket()
-model_artifact = f"s3://{bucket}/model/xgboost_model.tar.gz"
 
-# Create SageMaker model
+# Create SageMaker client
 sagemaker_client = boto3.client("sagemaker")
+
+# Create the SageMaker model using the dynamic model URL
 sagemaker_client.create_model(
     ModelName=model_name,
     PrimaryContainer={
@@ -22,7 +27,7 @@ sagemaker_client.create_model(
     ExecutionRoleArn=role,
 )
 
-# Create endpoint config
+# Create endpoint configuration
 config_name = "retainai-xgboost-config"
 sagemaker_client.create_endpoint_config(
     EndpointConfigName=config_name,
