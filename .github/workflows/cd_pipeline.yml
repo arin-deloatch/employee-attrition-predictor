@@ -21,27 +21,38 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install sagemaker  # Ensure SageMaker is installed
+          pip install sagemaker boto3  # Ensure SageMaker and boto3 are installed
 
       - name: Configure AWS for Learner Lab
         run: |
-          export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
-          export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
-          export AWS_DEFAULT_REGION=us-east-1
-          echo "AWS credentials set dynamically"
+          set -e  # Exit on failure
+          export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id || echo "NOT_SET")
+          export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key || echo "NOT_SET")
+          export AWS_DEFAULT_REGION="us-east-1"  # Ensure the region is set
+          
+          if [[ "$AWS_ACCESS_KEY_ID" == "NOT_SET" || "$AWS_SECRET_ACCESS_KEY" == "NOT_SET" ]]; then
+            echo "ERROR: AWS credentials are not properly set."
+            exit 1
+          fi
+          
+          echo "AWS credentials and region set."
 
       - name: Debug SageMaker Default Bucket
         run: |
+          set -e  # Exit on failure
+          python -c "import boto3; print(boto3.client('s3').list_buckets())"
           python -c "import sagemaker; print(sagemaker.Session().default_bucket())"
 
       - name: Get User's SageMaker Default Bucket
         run: |
+          set -e  # Exit on failure
           export SAGEMAKER_DEFAULT_BUCKET=$(python -c "import sagemaker; import re; print(re.search(r'^[a-z0-9-.]+$', sagemaker.Session().default_bucket()).group(0))")
           echo "SAGEMAKER_DEFAULT_BUCKET=$SAGEMAKER_DEFAULT_BUCKET" >> $GITHUB_ENV
           echo "Using S3 Bucket: $SAGEMAKER_DEFAULT_BUCKET"
 
       - name: Retrieve Model URL from S3
         run: |
+          set -e  # Exit on failure
           aws s3 cp s3://$SAGEMAKER_DEFAULT_BUCKET/model/model_url.txt model_url.txt
           export MODEL_URL=$(cat model_url.txt)
           echo "MODEL_URL=$MODEL_URL" >> $GITHUB_ENV
