@@ -1,0 +1,61 @@
+# Ignore Jupyter Notebook checkpoints
+**/.ipynb_checkpoints/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore logs and temp files
+logs/
+*.log
+*.out
+*.err
+*.pid
+*.swp
+
+# Ignore virtual environments
+venv/
+.env/
+.venv/
+
+# Ignore dataset files
+*.csv
+*.tsv
+*.json
+*.xls
+*.xlsx
+*.parquet
+data/
+dataset/
+
+# Ignore compiled files and shared libraries
+*.so
+*.dll
+*.dylib
+*.o
+*.a
+*.out
+*.exe
+
+# Ignore environment configuration files
+.env
+*.ini
+*.toml
+
+# Ignore model artifacts
+*.h5
+*.pkl
+*.joblib
+*.ckpt
+*.onnx
+model/
+models/
+saved_models/
+
+# Ignore Sagemaker output files
+*.tar.gz
+*.npy
+output/
+sagemaker-studio/
+
