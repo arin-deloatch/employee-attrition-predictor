@@ -19,7 +19,9 @@ jobs:
           python-version: "3.9"
 
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install sagemaker  # Ensure SageMaker is installed
 
       - name: Configure AWS for Learner Lab
         run: |
@@ -28,16 +30,22 @@ jobs:
           export AWS_DEFAULT_REGION=us-east-1
           echo "AWS credentials set dynamically"
 
+      - name: Debug SageMaker Default Bucket
+        run: |
+          python -c "import sagemaker; print(sagemaker.Session().default_bucket())"
+
       - name: Get User's SageMaker Default Bucket
         run: |
-          export SAGEMAKER_DEFAULT_BUCKET=$(python -c "import sagemaker; print(sagemaker.Session().default_bucket())")
+          export SAGEMAKER_DEFAULT_BUCKET=$(python -c "import sagemaker; import re; print(re.search(r'^[a-z0-9-.]+$', sagemaker.Session().default_bucket()).group(0))")
           echo "SAGEMAKER_DEFAULT_BUCKET=$SAGEMAKER_DEFAULT_BUCKET" >> $GITHUB_ENV
+          echo "Using S3 Bucket: $SAGEMAKER_DEFAULT_BUCKET"
 
       - name: Retrieve Model URL from S3
         run: |
           aws s3 cp s3://$SAGEMAKER_DEFAULT_BUCKET/model/model_url.txt model_url.txt
           export MODEL_URL=$(cat model_url.txt)
           echo "MODEL_URL=$MODEL_URL" >> $GITHUB_ENV
+          echo "Using Model URL: $MODEL_URL"
 
       - name: Deploy Model to SageMaker
         run: python ci_cd/deploy_model.py
