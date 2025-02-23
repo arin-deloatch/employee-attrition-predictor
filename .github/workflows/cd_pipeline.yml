@@ -23,16 +23,20 @@ jobs:
 
       - name: Configure AWS for Learner Lab
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region us-east-1
+          export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
+          export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
+          export AWS_DEFAULT_REGION=us-east-1
+          echo "AWS credentials set dynamically"
+
+      - name: Get User's SageMaker Default Bucket
+        run: |
+          export SAGEMAKER_DEFAULT_BUCKET=$(python -c "import sagemaker; print(sagemaker.Session().default_bucket())")
+          echo "SAGEMAKER_DEFAULT_BUCKET=$SAGEMAKER_DEFAULT_BUCKET" >> $GITHUB_ENV
 
       - name: Retrieve Model URL from S3
         run: |
-          BUCKET=${{ secrets.SAGEMAKER_DEFAULT_BUCKET }}
-          echo "Using default bucket: $BUCKET"
-          aws s3 cp s3://$BUCKET/model/model_url.txt model_url.txt
-          MODEL_URL=$(cat model_url.txt)
+          aws s3 cp s3://$SAGEMAKER_DEFAULT_BUCKET/model/model_url.txt model_url.txt
+          export MODEL_URL=$(cat model_url.txt)
           echo "MODEL_URL=$MODEL_URL" >> $GITHUB_ENV
 
       - name: Deploy Model to SageMaker
