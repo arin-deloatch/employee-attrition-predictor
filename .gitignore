@@ -19,7 +19,7 @@ venv/
 .env/
 .venv/
 
-# Ignore dataset files
+# Ignore most dataset files, but allow `data-feature-engineering` CSVs
 *.csv
 *.tsv
 *.json
@@ -28,6 +28,9 @@ venv/
 *.parquet
 data/
 dataset/
+
+# Allow CSV files in data-feature-engineering
+!data-feature-engineering/*.csv
 
 # Ignore compiled files and shared libraries
 *.so
@@ -53,7 +56,7 @@ model/
 models/
 saved_models/
 
-# Ignore Sagemaker output files
+# Ignore SageMaker output files
 *.tar.gz
 *.npy
 output/
