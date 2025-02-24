@@ -10,6 +10,14 @@ if not model_artifact:
 # Initialize SageMaker session
 session = sagemaker.Session()
 
+# Get AWS region dynamically
+region = session.boto_region_name
+if not region:
+    raise ValueError("❌ ERROR: Unable to determine AWS region.")
+
+# Get the latest SageMaker XGBoost container image for the region
+xgboost_image_uri = sagemaker.image_uris.retrieve("xgboost", region, version="latest")
+
 # Dynamically retrieve the SageMaker Execution Role ARN
 iam_client = boto3.client("iam")
 roles = iam_client.list_roles()["Roles"]
@@ -34,7 +42,7 @@ sagemaker_client = boto3.client("sagemaker")
 sagemaker_client.create_model(
     ModelName=model_name,
     PrimaryContainer={
-        "Image": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-xgboost:latest",
+        "Image": xgboost_image_uri,  # Use the correct SageMaker-provided image
         "ModelDataUrl": model_artifact,
     },
     ExecutionRoleArn=sagemaker_role,
