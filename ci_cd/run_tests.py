@@ -1,21 +1,30 @@
 import pandas as pd
 import os
 
+# Get the absolute path to the `data-feature-engineering` directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Moves up one level
+DATA_DIR = os.path.join(BASE_DIR, "data-feature-engineering")
+
 # Ensure training and test data exist
 def test_data_existence():
-    assert os.path.exists("data-feature-engineering/train.csv"), "❌ Train data is missing!"
-    assert os.path.exists("data-feature-engineering/test.csv"), "❌ Test data is missing!"
+    train_path = os.path.join(DATA_DIR, "train.csv")
+    test_path = os.path.join(DATA_DIR, "test.csv")
+
+    assert os.path.exists(train_path), f"❌ Train data is missing at {train_path}!"
+    assert os.path.exists(test_path), f"❌ Test data is missing at {test_path}!"
+    
     print("✅ Data existence check passed.")
 
 # Validate dataset integrity
 def test_data_integrity():
-    df = pd.read_csv("data-feature-engineering/train.csv")
+    train_path = os.path.join(DATA_DIR, "train.csv")
+    df = pd.read_csv(train_path)
 
     # Check for missing values
     assert df.isnull().sum().max() == 0, "❌ Dataset contains missing values!"
 
     # Ensure the dataset is large enough
-    assert len(df) > 1000, "❌ Dataset is too small!"
+    assert len(df) > 1000, f"❌ Dataset is too small! Found only {len(df)} rows."
 
     # Check for duplicate rows
     assert df.duplicated().sum() == 0, "❌ Dataset contains duplicate rows!"

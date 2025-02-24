@@ -1,6 +1,7 @@
 import os
 import boto3
 import sagemaker
+from datetime import datetime
 
 # Retrieve the dynamic model URL from an environment variable
 model_artifact = os.getenv("MODEL_URL")
@@ -32,8 +33,11 @@ for role in roles:
 if not sagemaker_role:
     raise ValueError("❌ ERROR: No SageMaker Execution Role found in your AWS account. Please create one.")
 
-# Define model name (consider adding versioning or timestamps)
-model_name = "retainai-xgboost"
+# Generate a unique model name using timestamp
+timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+model_name = f"retainai-xgboost-{timestamp}"
+config_name = f"{model_name}-config"
+endpoint_name = f"{model_name}-endpoint"
 
 # Create SageMaker client
 sagemaker_client = boto3.client("sagemaker")
@@ -49,7 +53,6 @@ sagemaker_client.create_model(
 )
 
 # Create endpoint configuration
-config_name = "retainai-xgboost-config"
 sagemaker_client.create_endpoint_config(
     EndpointConfigName=config_name,
     ProductionVariants=[
@@ -63,7 +66,6 @@ sagemaker_client.create_endpoint_config(
 )
 
 # Deploy model endpoint
-endpoint_name = "retainai-xgboost-endpoint"
 sagemaker_client.create_endpoint(
     EndpointName=endpoint_name, EndpointConfigName=config_name
 )
